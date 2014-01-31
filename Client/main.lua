@@ -48,6 +48,8 @@ function love.update(dt)
 	  if event then
 			if event.type == "receive" then
 				console:print(event.data)
+			elseif event.type == "disconnect" then
+				server:send(name.." has disconnected") 
 			end
 	  end
 	 end
