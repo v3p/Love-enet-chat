@@ -5,7 +5,6 @@ screen = {
 	}
 require "console"
 
-local ip = "localhost"
 local port = 25565
 
 function love.load()

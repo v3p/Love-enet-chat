@@ -20,7 +20,7 @@ function console:keypressed(key)
 	if key == "backspace" then
 		if #self.input > 0 then
 			self.input = self.input:sub(1, -2)
-			if #self.input > 1 then
+			if #self.input > 0 then
 				if self.input:sub(-1, -1):byte() >= 129 then 
 					self.input = self.input:sub(1, -2)
 				end
@@ -49,36 +49,52 @@ function console:cmd()
 	local t = split(self.input)
 	self.input = ""
 	
-	if t[1] == "quit" then
+	if t[1] == "/quit" then
 		love.event.push("quit")
-	elseif t[1] == "setName" then
+	elseif t[1] == "/name" then
 		if t[2] ~= nil then
 			name = t[2]
 			console:print("Name changed to "..t[2])
+			_data[1] = t[2]
 		else
-			console:print("Usage: setName <name>")
+			console:print("Usage: /name <name>")
 		end
-	elseif t[1] == "connect" then
-		if t[2] ~= nil then
-			server = host:connect(t[2])
+	elseif t[1] == "/connect" then
+		if t[2] ~= nil and #name > 0 then
+			ip = t[2]
+			server = host:connect(ip)
 			console:print("Connected to "..t[2])
+			_data[2] = t[2]
 		else
-			console:print("Usage: connect <ip:port>")
+			if t[2] == nil then
+				console:print("Usage: connect <ip:port>")
+			elseif #name < 1 then
+				console:print("Please choose a name first with /name <name>")
+			end
+		end
+	elseif t[1] == "/reconnect" then
+		if ip ~= "none" then
+			server = host:connect(ip)
+			console:print("Connected to "..ip)
+		else
+			console:print("No previous server found")
 		end
 	else
 		local s = ""
 		for i,v in ipairs(t) do s = s..t[i].." " end
-		server:send(name..": "..s)
+		if server ~= false then 
+			server:send(name..": "..s) 
+		else
+			console:print("Use /connect to connect to a server")
+		end
 	end
 end
 
 function console:draw()
-	love.graphics.setColor(32, 32, 32)
-	love.graphics.setFont(self.font)
-	--love.graphics.rectangle("fill", 0, (screen.height - love.graphics.getFont():getHeight()) - self.y, screen.width, love.graphics.getFont():getHeight())
 	love.graphics.setColor(200, 200, 200)
+	love.graphics.setFont(self.font)
 	love.graphics.print(self.input, self.x, (screen.height - love.graphics.getFont():getHeight()) - self.y)
-	love.graphics.setColor(100, 100, 100)
+	love.graphics.setColor(150, 150, 150)
 	love.graphics.print(self.text, self.x, screen.height - (self.y * 8) - (love.graphics.getFont():getHeight() * self.lines))
 end
 

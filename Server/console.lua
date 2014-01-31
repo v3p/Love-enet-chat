@@ -44,7 +44,7 @@ function console:cmd()
 	
 	if t[1] == "quit" then
 		love.event.push("quit")
-	elseif t[1] == "start" then
+	elseif t[1] == "" then
 		
 	else
 		console:print("Unknown command")
